@@ -10,28 +10,33 @@ from django.shortcuts import render
 from .forms import RegistrationForm
 from .models import SocialUser
 
+
 # Create your views here.
 def index(request):
     return render(request, 'index.html', {})
 
 
 def index_nav(request):
+    print 'dupa'
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
+        form = RegistrationForm(request.POST or None)
+        #form.b_day = request.body['birthday_month'] + "/" + request.body['birthday_day'] + "/" + request.body['birthday_year']
+        print 'chuj'
+        print form.errors
         if form.is_valid():
-            new_user = form.save(commit=False)
-
-
-            form_name = form.cleaned_data["name"]
-            form_surname = form.cleaned_data["surname"]
+            print 'kurwa'
+            form_name = form.cleaned_data["first_name"]
+            form_surname = form.cleaned_data["last_name"]
             form_email = form.cleaned_data["email"]
             form_b_day = form.cleaned_data["b_day"]
             form_password = form.cleaned_data["password"]
             form_gender = form.cleaned_data["gender"]
 
-            new_user.save()
-
-
+            feedback = SocialUser(name=form_name, surname=form_surname, email=form_email,
+                                  b_day=form_b_day, password=form_password, gender=form_gender
+                                  )
+            print 'cipa'
+            feedback.save()
             return render(request, "index_nav.html", {"form": form,
                                                       "name": form_name,
                                                       "surname": form_surname,
@@ -40,9 +45,7 @@ def index_nav(request):
                                                       "password": form_password,
                                                       "gender": form_gender
                                                       })
-
-    return render(request, 'index_nav.html', {})
-
-
-
-
+    else:
+        print 'troll'
+        form = RegistrationForm()
+    return render(request, 'index_nav.html', {"form": form})
