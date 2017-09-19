@@ -7,7 +7,7 @@ from django.contrib.auth import (
 
 from django.shortcuts import render
 
-from .forms import RegistrationForm
+from .forms import RegistrationForm, LoginForm
 from .models import SocialUser
 
 
@@ -17,14 +17,12 @@ def index(request):
 
 
 def index_nav(request):
-    print 'dupa'
     if request.method == 'POST':
         form = RegistrationForm(request.POST or None)
-        #form.b_day = request.body['birthday_month'] + "/" + request.body['birthday_day'] + "/" + request.body['birthday_year']
-        print 'chuj'
+
+        login_form = LoginForm(request.POST or None)
         print form.errors
         if form.is_valid():
-            print 'kurwa'
             form_name = form.cleaned_data["first_name"]
             form_surname = form.cleaned_data["last_name"]
             form_email = form.cleaned_data["email"]
@@ -35,9 +33,8 @@ def index_nav(request):
             feedback = SocialUser(name=form_name, surname=form_surname, email=form_email,
                                   b_day=form_b_day, password=form_password, gender=form_gender
                                   )
-            print 'cipa'
             feedback.save()
-            return render(request, "index_nav.html", {"form": form,
+            return render(request, "index_nav.html", {"formOne": form,
                                                       "name": form_name,
                                                       "surname": form_surname,
                                                       "email": form_email,
@@ -45,7 +42,28 @@ def index_nav(request):
                                                       "password": form_password,
                                                       "gender": form_gender
                                                       })
+        if login_form.is_valid():
+            email = login_form.cleaned_data["email"]
+            password = login_form.cleaned_data["password"]
+            user = authenticate(email=email, password=password)
+            login(request, user)
+            print (request.user.is_authenticated())
+
+            return render(request, 'index_nav.html', {"formTwo": login_form, "email": email, "password": password })
     else:
-        print 'troll'
         form = RegistrationForm()
     return render(request, 'index_nav.html', {"form": form})
+
+
+# def login_view(request):
+#     if request.method == 'POST':
+#         login_form = LoginForm(request.POST or None)
+#         if login_form.is_valid():
+#             email = login_form.cleaned_data["email"]
+#             password = login_form.cleaned_data["password"]
+#             user = authenticate(email=email, password=password)
+#             login(request, user)
+#             print (request.user.is_authenticated())
+#
+#             return render(request, 'index_nav.html', {"form": login_form, "email": email, "password": password })
+#     return render(request, 'index_nav.html', {})

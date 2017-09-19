@@ -11,6 +11,6 @@ from . views import (
 
 urlpatterns = [
     url(r'^$', index),
-    url(r'^nav/$', index_nav),
+    url(r'^index_nav/$', index_nav, name="nav"),
 
 ]
