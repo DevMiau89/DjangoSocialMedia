@@ -4,10 +4,8 @@
 <!-- Top content -->
 <hr>
 <div>
-    <form name= "formOne" action="" method="post" class="w3-container w3-card-4 w3-light-grey w3-text-blue w3-margin" style="margin-top: 100px !important; margin-left: 1800px !important;
+    <form name= "form1" action="" method="post" class="w3-container w3-card-4 w3-light-grey w3-text-blue w3-margin" style="margin-top: 100px !important; margin-left: 1800px !important;
     width:600px; "> {% csrf_token %}
-    {{ form.errors }}
-    {{ form.non_field_errors }}
         <h2 class="w3-center" style="color:#435761 !important"><i class="fa fa-user-plus"> Sign Up</i></h2>
 
     <div class="w3-row w3-section">
@@ -56,7 +54,7 @@
         </div>
     </div>
 
-    <button class="w3-button w3-block w3-section w3-blue w3-ripple w3-padding" style="background-color:#435761 !important" >Submit</button>
+    <button class="w3-button w3-block w3-section w3-blue w3-ripple w3-padding" name="btnform1" style="background-color:#435761 !important" >Submit</button>
 
     </form>
 </div>
