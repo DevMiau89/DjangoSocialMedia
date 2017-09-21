@@ -3,6 +3,8 @@ from datetime import datetime
 from django.forms import extras
 from .models import SocialUser
 
+from django.contrib.auth.models import User
+
 
 from django.contrib.auth import (
     authenticate,
@@ -11,11 +13,11 @@ from django.contrib.auth import (
     logout,
 )
 
-User = get_user_model()
+user = get_user_model()
 
 
 class RegistrationForm(forms.Form):
-
+    email_ver = forms.EmailField(required=False)
     first_name = forms.CharField(max_length=50, required=True)
     last_name = forms.CharField(max_length=50, required=True)
     email = forms.EmailField(required=True)
@@ -25,23 +27,42 @@ class RegistrationForm(forms.Form):
         choices=SocialUser.GENDER_CHOICES
     ), required=True)
 
+    def clean_email(self, *args, **kwargs):
+        print self.cleaned_data
+        email = self.cleaned_data.get('email')
+        email2 = self.cleaned_data.get('email_ver')
+        print email
+        print email2
+        if email != email2:
+            raise forms.ValidationError("Emails must match")
+        email_qs = User.objects.filter(email=email).first()
+        if email_qs:
+            raise forms.ValidationError("This email has already been registered")
+        return super(RegistrationForm, self).clean(*args, **kwargs)
+
+
+
+
+
 
 class LoginForm(forms.Form):
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
-
+    email = forms.EmailField(required=True)
+    password = forms.CharField(widget=forms.PasswordInput, required=True)
 
     def clean(self, *args, **kwargs):
-        email = self.cleaned_data["email"]
-        password = self.cleaned_data["password"]
+        email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
 
-        if email and password:
-            user = authenticate(username=email, password=password)
-            if not user:
-                raise forms.ValidationError("This user does not exist")
-            if not user.check_password(password):
+        # user = authenticate(username=email, password=password)
+
+        user_qs = User.objects.filter(email=email).first()
+        if not user_qs:
+           raise forms.ValidationError("This user does not exist")
+        else:
+            #user = authenticate(username=email, password=password)
+            if not user_qs.check_password(password):
                 raise forms.ValidationError("Incorrect password")
-            if not user.is_active:
+            if not user_qs.is_active:
                 raise forms.ValidationError("This user is not longer active")
 
         return super(LoginForm, self).clean(*args, **kwargs)

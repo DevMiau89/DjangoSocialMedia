@@ -39,6 +39,8 @@ def index_nav(request):
             user_admin = User.objects.create_user(form_email, form_email, form_password)
             user_admin.save()
             feedback.save()
+            new_user = authenticate(username=feedback.email, password=feedback.password)
+            login(request, new_user)
             return render(request, "index_nav.html", {"form": form1,
                                                       "name": form_name,
                                                       "surname": form_surname,
@@ -55,12 +57,19 @@ def index_nav(request):
 def login_view(request):
     if request.method == 'POST':
         form2 = LoginForm(request.POST or None)
+        form1 = RegistrationForm(request.POST or None)
         print form2.errors
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-
-        user = authenticate(username=email, password=password)
-        if user:
+        if form2.is_valid():
+            email = request.POST.get("email")
+            password = request.POST.get("password")
+            user = authenticate(username=email, password=password)
             login(request, user)
             return redirect('/')
-    return render(request, 'login_view.html', {})
+    else:
+        form2 = RegistrationForm()
+    return render(request, "login_view.html", {'form2': form2, "form": form1})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('/index_nav')

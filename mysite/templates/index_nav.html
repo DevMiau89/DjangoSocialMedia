@@ -4,10 +4,11 @@
 <!-- Top content -->
 <hr>
 <div>
-    <form name= "form1" action="" method="post" class="w3-container w3-card-4 w3-light-grey w3-text-blue w3-margin" style="margin-top: 100px !important; margin-left: 1800px !important;
+    <form name= "form" action="" method="post" class="w3-container w3-card-4 w3-light-grey w3-text-blue w3-margin" style="margin-top: 100px !important; margin-left: 1800px !important;
     width:600px; "> {% csrf_token %}
         <h2 class="w3-center" style="color:#435761 !important"><i class="fa fa-user-plus"> Sign Up</i></h2>
-
+    <!--{{ form.errors }}-->
+    {{ form.non_field_errors }}
     <div class="w3-row w3-section">
       <div class="w3-col" style="width:50px"><i class="w3-xxlarge fa fa-user" style="color:#435761 !important"></i></div>
         <div class="w3-rest">
@@ -26,6 +27,13 @@
       <div class="w3-col" style="width:50px"><i class="w3-xxlarge fa fa-envelope-o" style="color:#435761 !important"></i></div>
         <div class="w3-rest">
           <input class="w3-input w3-border" name="email" type="text" placeholder="Email" required>
+        </div>
+    </div>
+
+    <div class="w3-row w3-section">
+      <div class="w3-col" style="width:50px"><i class="w3-xxlarge fa fa-envelope-o" style="color:#435761 !important"></i></div>
+        <div class="w3-rest">
+          <input class="w3-input w3-border" name="email_ver" type="text" placeholder="Confirm Email" required>
         </div>
     </div>
 

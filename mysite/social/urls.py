@@ -7,12 +7,14 @@ from . views import (
     index,
     index_nav,
     login_view,
+    logout_view
 
 )
 
 
 urlpatterns = [
     url(r'^$', index),
-    url(r'^index_nav/$', index_nav),
+    url(r'^index_nav/$', index_nav, name='index_nav'),
     url(r'^login_view$', login_view),
+    url(r'^logout_view$', logout_view),
 ]
