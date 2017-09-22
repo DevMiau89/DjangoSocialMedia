@@ -15,8 +15,14 @@
     <body class="w3-theme-l5">
 
     <!-- Navigation -->
+     {% if user.is_authenticated %}
+    {% include "includes/_navbar.html" %}
+    <!--nav -->
+    {% else %}
+    <!-- Navigation -->
     {% include "includes/_navbar2.html" %}
     <!--nav -->
+    {% endif %}
 
     <!-- Container-->
     {% block content %}

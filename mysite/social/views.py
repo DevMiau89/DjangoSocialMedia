@@ -72,4 +72,5 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
+    print request.user.is_active
     return redirect('/index_nav')
