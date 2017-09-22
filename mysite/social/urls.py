@@ -13,8 +13,8 @@ from . views import (
 
 
 urlpatterns = [
-    url(r'^$', index),
-    url(r'^index_nav/$', index_nav, name='index_nav'),
+    url(r'^account/$', index, name='account'),
+    url(r'^$', index_nav, name='index_nav'),
     url(r'^login_view$', login_view),
     url(r'^logout_view$', logout_view),
 ]
