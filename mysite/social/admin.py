@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import SocialUser
+from .models import SocialUser, Post
 
 class SocialUserModelAdmin(admin.ModelAdmin):
     list_display = ['name', 'surname', 'email', 'created_date']
@@ -13,4 +13,15 @@ class SocialUserModelAdmin(admin.ModelAdmin):
         model = SocialUser
 
 
+class PostModelAdmin(admin.ModelAdmin):
+    list_display = ['title', 'created_date']
+    list_display_links = ['created_date']
+    list_filter = ['created_date']
+    search_fields = ['title', "text"]
+
+    class Meta:
+        model = Post
+
+
+admin.site.register(Post, PostModelAdmin)
 admin.site.register(SocialUser, SocialUserModelAdmin)

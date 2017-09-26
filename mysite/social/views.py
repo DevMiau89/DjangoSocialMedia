@@ -8,14 +8,33 @@ from django.contrib.auth import (
 
 from django.shortcuts import render, redirect
 
-from .forms import RegistrationForm, LoginForm
-from .models import SocialUser
+from .forms import RegistrationForm, LoginForm, PostForm
+from .models import SocialUser, Post
 
 user = get_user_model()
 
 # Create your views here.
 def index(request):
-    return render(request, 'index.html', {})
+
+    if request.method == 'POST':
+        post_form = PostForm(request.POST or None)
+        print post_form.errors
+        if post_form.is_valid():
+            form_title = post_form.cleaned_data['title']
+            form_text = post_form.cleaned_data['text']
+
+
+            feedback = Post(title=form_title, text=form_text)
+            feedback.save()
+            return render(request, "index.html", {"form": post_form,
+                                                  "title": form_title,
+                                                  "text": form_text,
+            })
+    current_user = request.name
+    print current_user
+    posts = Post.objects.all()
+    print posts
+    return render(request, 'index.html', {"posts": posts, "user": current_user})
 
 
 def index_nav(request):
@@ -23,8 +42,7 @@ def index_nav(request):
         form1 = RegistrationForm(request.POST or None)
 
         print form1.errors
-        print "cipa"
-        if form1.is_valid() and "btnform1" in request.POST:
+        if form1.is_valid():
             form_name = form1.cleaned_data["first_name"]
             form_surname = form1.cleaned_data["last_name"]
             form_email = form1.cleaned_data["email"]
@@ -36,7 +54,7 @@ def index_nav(request):
                                   b_day=form_b_day, password=form_password, gender=form_gender
                                   )
 
-            user_admin = User.objects.create_user(form_email, form_email, form_password)
+            user_admin = User.objects.create_user(username=form_email, email=form_email, password=form_password)
             user_admin.save()
             feedback.save()
             new_user = authenticate(username=feedback.email, password=feedback.password)
@@ -64,7 +82,7 @@ def login_view(request):
             password = request.POST.get("password")
             user = authenticate(username=email, password=password)
             login(request, user)
-            return redirect('/')
+            return redirect('/account')
     else:
         form2 = RegistrationForm()
     return render(request, "login_view.html", {'form2': form2, "form": form1})
@@ -73,4 +91,4 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     print request.user.is_active
-    return redirect('/index_nav')
+    return redirect('/')

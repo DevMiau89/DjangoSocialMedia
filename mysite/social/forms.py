@@ -1,5 +1,5 @@
 from django import forms
-from datetime import datetime
+from datetime import datetime, date
 from django.forms import extras
 from .models import SocialUser
 
@@ -68,3 +68,7 @@ class LoginForm(forms.Form):
         return super(LoginForm, self).clean(*args, **kwargs)
 
 
+
+class PostForm(forms.Form):
+    title = forms.CharField(max_length=50, required=True)
+    text = forms.CharField(widget=forms.Textarea, required=True)
