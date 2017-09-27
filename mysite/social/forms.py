@@ -38,7 +38,7 @@ class RegistrationForm(forms.Form):
         email_qs = User.objects.filter(email=email).first()
         if email_qs:
             raise forms.ValidationError("This email has already been registered")
-        return super(RegistrationForm, self).clean(*args, **kwargs)
+        return email
 
 
 

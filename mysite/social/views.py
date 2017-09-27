@@ -30,11 +30,12 @@ def index(request):
                                                   "title": form_title,
                                                   "text": form_text,
             })
-    current_user = request.name
-    print current_user
+
+    current_user = SocialUser.objects.filter(email=request.user.email).first()
+    name_of_logged_in_user = current_user.name
     posts = Post.objects.all()
     print posts
-    return render(request, 'index.html', {"posts": posts, "user": current_user})
+    return render(request, 'index.html', {"posts": posts, "user": name_of_logged_in_user})
 
 
 def index_nav(request):
@@ -43,18 +44,17 @@ def index_nav(request):
 
         print form1.errors
         if form1.is_valid():
-            form_name = form1.cleaned_data["first_name"]
-            form_surname = form1.cleaned_data["last_name"]
-            form_email = form1.cleaned_data["email"]
-            form_b_day = form1.cleaned_data["b_day"]
-            form_password = form1.cleaned_data["password"]
-            form_gender = form1.cleaned_data["gender"]
-
+            form_name = form1.cleaned_data.get("first_name")
+            form_surname = form1.cleaned_data.get("last_name")
+            form_email = form1.cleaned_data.get("email")
+            form_b_day = form1.cleaned_data.get("b_day")
+            form_password = form1.cleaned_data.get("password")
+            form_gender = form1.cleaned_data.get("gender")
             feedback = SocialUser(name=form_name, surname=form_surname, email=form_email,
                                   b_day=form_b_day, password=form_password, gender=form_gender
                                   )
 
-            user_admin = User.objects.create_user(username=form_email, email=form_email, password=form_password)
+            user_admin = User.objects.create_user(form_email, form_email, form_password)
             user_admin.save()
             feedback.save()
             new_user = authenticate(username=feedback.email, password=feedback.password)

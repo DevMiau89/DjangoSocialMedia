@@ -5,13 +5,13 @@ from django.db import models
 # Create your models here.
 
 class SocialUser(models.Model):
-    name = models.CharField(max_length=40)
-    surname = models.CharField(max_length=40)
-    email = models.EmailField(max_length=80, unique=True)
-    city = models.CharField(max_length=40, null=True)
-    job = models.CharField(max_length=40, null=True)
+    name = models.CharField(max_length=255)
+    surname = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255, unique=True)
+    city = models.CharField(max_length=255, null=True)
+    job = models.CharField(max_length=255, null=True)
     b_day = models.DateField(auto_now=False, auto_now_add=False)
-    password = models.CharField(max_length=80)
+    password = models.CharField(max_length=255)
     GENDER_CHOICES = (
         ('M', 'Male'),
         ('F', 'Female'),
