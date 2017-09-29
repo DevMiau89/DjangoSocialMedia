@@ -6,12 +6,12 @@ from django.contrib.auth import (
     logout,
 )
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RegistrationForm, LoginForm, PostForm
 from .models import SocialUser, Post
 
-user = get_user_model()
+User = get_user_model()
 
 # Create your views here.
 def index(request):
@@ -26,16 +26,58 @@ def index(request):
 
             feedback = Post(title=form_title, text=form_text)
             feedback.save()
+            posts = Post.objects.all().order_by('-created_date')
             return render(request, "index.html", {"form": post_form,
                                                   "title": form_title,
                                                   "text": form_text,
+                                                  "posts": posts
             })
 
     current_user = SocialUser.objects.filter(email=request.user.email).first()
     name_of_logged_in_user = current_user.name
-    posts = Post.objects.all()
-    print posts
-    return render(request, 'index.html', {"posts": posts, "user": name_of_logged_in_user})
+    posts = Post.objects.all().order_by('-created_date')
+
+    return render(request, 'index.html', {"posts": posts,
+                                          "name_of_logged_in_user": name_of_logged_in_user
+                                          })
+
+
+def post_detail(request, id=None):
+    current_user = SocialUser.objects.filter(email=request.user.email).first()
+    name_of_logged_in_user = current_user.name
+    instance = get_object_or_404(Post, id=id)
+
+    title_value = instance.title
+    print instance.title
+    text_value = instance.text
+    print instance.text
+    print request.POST
+    if request.method == 'POST' and "text" not in request.POST:
+        instance.delete()
+        return redirect("/account")
+
+
+    if request.method == 'POST' and request.POST['text']:
+        edit_form = PostForm(request.POST or None)
+        if edit_form.is_valid():
+            edit_form_title = edit_form.cleaned_data['title']
+            edit_form_text = edit_form.cleaned_data['text']
+
+            edit_feedback = Post.objects.filter(id=instance.id).first()
+            print instance.id
+                #.update(title=edit_form_title, text=edit_form_text)
+            print edit_feedback, "yolo"
+            edit_feedback.save()
+            instance = get_object_or_404(Post, id=id)
+            return render(request, "post_detail.html", {"instance": instance,
+                                                        "edit_form": edit_form
+                                                        })
+
+    return render(request, "post_detail.html", {"instance": instance,
+                                                "name_of_logged_in_user": name_of_logged_in_user,
+                                                "title_value": title_value,
+                                                "text_value": text_value
+                                                })
 
 
 def index_nav(request):
@@ -81,6 +123,7 @@ def login_view(request):
             email = request.POST.get("email")
             password = request.POST.get("password")
             user = authenticate(username=email, password=password)
+            print user.is_active
             login(request, user)
             return redirect('/account')
     else:

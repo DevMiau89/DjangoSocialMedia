@@ -59,7 +59,7 @@ class LoginForm(forms.Form):
         if not user_qs:
            raise forms.ValidationError("This user does not exist")
         else:
-            #user = authenticate(username=email, password=password)
+            # user = authenticate(username=email, password=password)
             if not user_qs.check_password(password):
                 raise forms.ValidationError("Incorrect password")
             if not user_qs.is_active:
