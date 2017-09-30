@@ -63,11 +63,8 @@ def post_detail(request, id=None):
             edit_form_title = edit_form.cleaned_data['title']
             edit_form_text = edit_form.cleaned_data['text']
 
-            edit_feedback = Post.objects.filter(id=instance.id).first()
-            print instance.id
-                #.update(title=edit_form_title, text=edit_form_text)
-            print edit_feedback, "yolo"
-            edit_feedback.save()
+            Post.objects.select_for_update().filter(id=id).update(title=edit_form_title, text=edit_form_text)
+
             instance = get_object_or_404(Post, id=id)
             return render(request, "post_detail.html", {"instance": instance,
                                                         "edit_form": edit_form
