@@ -9,13 +9,14 @@ from django.contrib.auth import (
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RegistrationForm, LoginForm, PostForm
-from .models import SocialUser, Post
+from .models import SocialUser, Post, Friend
 
 User = get_user_model()
 
 # Create your views here.
-def index(request):
-
+def index(request, id=None):
+    # if id:
+    #     user_id = request.user.id
     if request.method == 'POST':
         post_form = PostForm(request.POST or None)
         print post_form.errors
@@ -36,9 +37,12 @@ def index(request):
     current_user = SocialUser.objects.filter(email=request.user.email).first()
     name_of_logged_in_user = current_user.name
     posts = Post.objects.all().order_by('-created_date')
+    users = User.objects.exclude(id=request.user.id)
 
     return render(request, 'index.html', {"posts": posts,
-                                          "name_of_logged_in_user": name_of_logged_in_user
+                                          "name_of_logged_in_user": name_of_logged_in_user,
+                                          "users": users,
+                                          # "user_id": user_id,
                                           })
 
 
@@ -80,7 +84,6 @@ def post_detail(request, id=None):
 def index_nav(request):
     if request.method == 'POST':
         form1 = RegistrationForm(request.POST or None)
-
         print form1.errors
         if form1.is_valid():
             form_name = form1.cleaned_data.get("first_name")
@@ -122,13 +125,22 @@ def login_view(request):
             user = authenticate(username=email, password=password)
             print user.is_active
             login(request, user)
-            return redirect('/account')
+            return redirect('/account/profile/%d' %request.user.id)
     else:
         form2 = RegistrationForm()
-    return render(request, "login_view.html", {'form2': form2, "form": form1})
+    return render(request, "login_view.html", {"form2": form2, "form": form1})
 
 
 def logout_view(request):
     logout(request)
     print request.user.is_active
     return redirect('/')
+
+
+def change_friends(request, operation, pk):
+    new_friend = User.objects.get(pk=pk)
+    if operation == "add":
+        Friend.make_friend(request.user, new_friend)
+    elif operation == "remove":
+        Friend.lose_friend(request.user, new_friend)
+    return redirect('templates:index')

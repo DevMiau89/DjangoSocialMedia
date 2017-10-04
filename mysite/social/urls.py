@@ -14,9 +14,9 @@ from . views import (
 
 
 urlpatterns = [
-    url(r'^account/$', index, name='account'),
+    url(r'^account/profile/(?P<id>\d+)$', index, name='account'),
     url(r'^$', index_nav, name='index_nav'),
-    url(r'^account/(?P<id>\d+)/$', post_detail),
+    url(r'^account/article(?P<id>\d+)/$', post_detail),
     url(r'^login_view$', login_view),
     url(r'^logout_view$', logout_view),
 ]
