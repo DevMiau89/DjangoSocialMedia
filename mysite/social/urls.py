@@ -8,7 +8,8 @@ from . views import (
     index_nav,
     login_view,
     logout_view,
-    post_detail
+    post_detail,
+    change_friends
 
 )
 
@@ -17,6 +18,7 @@ urlpatterns = [
     url(r'^account/profile/(?P<id>\d+)$', index, name='account'),
     url(r'^$', index_nav, name='index_nav'),
     url(r'^account/article(?P<id>\d+)/$', post_detail),
+    url(r'^connect/(?P<operation>.+)/(?P<pk>\d+)/$', change_friends, name="change_friends"),
     url(r'^login_view$', login_view),
     url(r'^logout_view$', logout_view),
 ]

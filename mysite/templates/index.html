@@ -87,17 +87,16 @@
         </span>
         <p><strong>Hey!</strong></p>
         <p>People are looking at your profile. Find out who.</p>
+        {% for user in users %}
+        <p>{{ user.username }}</p>
+        <a href="{% url 'social:change_friends' operation='add' pk=user.pk %}">
+        <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom" style="background-color:#7d97a5 !important">Add Friend</button>
+        </a>
+        {% endfor %}
+        <br>
       </div>
+      <hr>
 
-       <!-- Users List -->
-      <h2> Other People</h2>
-      {% for user in users %}
-      <div class="w3-container w3-display-container w3-round w3-theme-l4 w3-border w3-theme-border w3-margin-bottom w3-hide-small">
-        <ul>
-          <li>{{ user.username }}</li>
-        </ul>
-      </div>
-      {% endfor %}
 
 
     <!-- End Left Column -->
@@ -178,7 +177,13 @@
       <br>
 
       <div class="w3-card-2 w3-round w3-white w3-padding-16 w3-center">
-        <p>ADS</p>
+        <p><strong>Friends</strong></p>
+        {% for friend in friends %}
+        <p>{{ friend.username }}</p>
+         <a href="{% url 'social:change_friends' operation='remove' pk=friend.pk %}">
+        <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom" style="background-color:#7d97a5 !important">Remove Friend</button>
+        </a>
+        {% endfor %}
       </div>
       <br>
 

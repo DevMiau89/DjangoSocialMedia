@@ -34,14 +34,18 @@ def index(request, id=None):
                                                   "posts": posts
             })
 
-    current_user = SocialUser.objects.filter(email=request.user.email).first()
-    name_of_logged_in_user = current_user.name
+    my_current_user = SocialUser.objects.filter(email=request.user.email).first()
+    name_of_logged_in_user = my_current_user.name
     posts = Post.objects.all().order_by('-created_date')
     users = User.objects.exclude(id=request.user.id)
+    friend = Friend.objects.get(current_user=request.user)
+    friends = friend.users.all()
+
 
     return render(request, 'index.html', {"posts": posts,
                                           "name_of_logged_in_user": name_of_logged_in_user,
                                           "users": users,
+                                          "friends": friends,
                                           # "user_id": user_id,
                                           })
 
@@ -138,9 +142,9 @@ def logout_view(request):
 
 
 def change_friends(request, operation, pk):
-    new_friend = User.objects.get(pk=pk)
+    friend = User.objects.get(pk=pk)
     if operation == "add":
-        Friend.make_friend(request.user, new_friend)
+        Friend.make_friend(request.user, friend)
     elif operation == "remove":
-        Friend.lose_friend(request.user, new_friend)
-    return redirect('templates:index')
+        Friend.lose_friend(request.user, friend)
+    return redirect('/account/profile/%d' %request.user.id)
