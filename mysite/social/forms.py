@@ -41,10 +41,6 @@ class RegistrationForm(forms.Form):
         return email
 
 
-
-
-
-
 class LoginForm(forms.Form):
     email = forms.EmailField(required=True)
     password = forms.CharField(widget=forms.PasswordInput, required=True)
@@ -72,3 +68,13 @@ class LoginForm(forms.Form):
 class PostForm(forms.Form):
     title = forms.CharField(max_length=50, required=True)
     text = forms.CharField(widget=forms.Textarea, required=True)
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = [
+            "first_name",
+            "last_name",
+            "email"
+        ]

@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 
 # Create your models here.
 
@@ -61,3 +62,21 @@ class Friend(models.Model):
             current_user=current_user
         )
         friend.users.remove(new_friend)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, related_name='user')
+    photo = models.ImageField(null=True, blank=True)
+    city = models.CharField(max_length=255, null=True)
+    b_day = models.DateField(auto_now=False, auto_now_add=False)
+    interests = models.CharField(max_length=50, null=True)
+    job = models.CharField(max_length=80, null=True)
+
+
+def create_profile(sender, **kwargs):
+    user = kwargs["instance"]
+    if kwargs["created"]:
+        user_profile = UserProfile(user=user)
+        user_profile.save()
+post_save.connect(create_profile, sender=User)
+
