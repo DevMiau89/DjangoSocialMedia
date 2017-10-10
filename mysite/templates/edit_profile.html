@@ -117,7 +117,7 @@
 
       <div class="w3-container w3-card-2 w3-white w3-round w3-margin"><br>
 
-        <form class="w3-container w3-card-4" method="post" action="">{% csrf_token %}
+        <form class="w3-container w3-card-4" method="post" action="" enctype="multipart/form-data">{% csrf_token %}
           <p>
           {{ formset.management_form }}
           <label style="color:#57707d !important"><b>First Name</b></label>

@@ -39,18 +39,34 @@ def index(request, id=None):
     my_current_user = SocialUser.objects.filter(email=request.user.email).first()
     name_of_logged_in_user = my_current_user.name
     posts = Post.objects.all().order_by('-created_date')
+    friend = Friend.objects.filter(current_user=request.user).first()
     users = User.objects.exclude(id=request.user.id)
-    friend = Friend.objects.get(current_user=request.user)
-    friends = friend.users.all()
+    updated_user = User.objects.filter(email=request.user.email).first()
+    updated_user2 = UserProfile.objects.filter(user_id=request.user.id).first()
+    print updated_user2
     user_id = request.user.id
     print user_id
+    if friend:
+        users = User.objects.exclude(id=request.user.id)
+        friends = friend.users.all()
 
+        return render(request, 'index.html', {"posts": posts,
+                                              "my_current_user": my_current_user,
+                                              "name_of_logged_in_user": name_of_logged_in_user,
+                                              "friends": friends,
+                                              "users": users,
+                                              "user_id": user_id,
+                                              "updated_user": updated_user,
+                                              "updated_user2": updated_user2
+                                              })
 
     return render(request, 'index.html', {"posts": posts,
+                                          "my_current_user": my_current_user,
                                           "name_of_logged_in_user": name_of_logged_in_user,
                                           "users": users,
-                                          "friends": friends,
-                                          "user_id": user_id
+                                          "user_id": user_id,
+                                          "updated_user": updated_user,
+                                          "updated_user2": updated_user2
                                           })
 
 
@@ -122,7 +138,7 @@ def index_nav(request):
     return render(request, 'index_nav.html', {"form": form1})
 
 
-def login_view(request, id=None):
+def login_view(request):
     if request.method == 'POST':
         form2 = LoginForm(request.POST or None)
         form1 = RegistrationForm(request.POST or None)
@@ -155,8 +171,8 @@ def change_friends(request, operation, pk):
 
 
 @login_required()
-def edit_user(request, pk):
-    user = User.objects.get(pk=pk)
+def edit_user(request, id):
+    user = User.objects.get(id=id)
 
     user_form = UserForm(instance=user)
     print 'yolo'
@@ -166,21 +182,18 @@ def edit_user(request, pk):
     if request.user.is_authenticated() and request.user.id == user.id:
         if request.method == 'POST':
             user_form = UserForm(request.POST, instance=user)
-            formset = ProfileInlineFormset(request.POST, instance=user)
-            print 'trolo'
+            formset = ProfileInlineFormset(request.POST, request.FILES, instance=user)
             if user_form.is_valid():
                 created_user = user_form.save(commit=False)
-                formset = ProfileInlineFormset(request.POST, instance=created_user)
-                print 'chuj'
+                formset = ProfileInlineFormset(request.POST, request.FILES, instance=created_user)
                 if formset.is_valid():
                     print created_user
                     created_user.save()
                     formset.save()
-                    print 'cipa'
                     return redirect('/account/profile/%d' %request.user.id)
 
             return render(request, 'edit_profile.html', {
-                "noodle": pk,
+                "noodle": id,
                 "noodle_form": user_form,
                 "formset": formset,
             })
