@@ -5,18 +5,20 @@ from django.contrib.auth import (
     login,
     logout,
 )
-
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import RegistrationForm, LoginForm, PostForm
-from .models import SocialUser, Post, Friend
+from django.forms.models import inlineformset_factory
+from .forms import RegistrationForm, LoginForm, PostForm, UserForm
+from .models import SocialUser, Post, Friend, UserProfile
+from django.core.exceptions import PermissionDenied
 
 User = get_user_model()
 
 # Create your views here.
+@login_required()
 def index(request, id=None):
-    # if id:
-    #     user_id = request.user.id
+
     if request.method == 'POST':
         post_form = PostForm(request.POST or None)
         print post_form.errors
@@ -40,13 +42,15 @@ def index(request, id=None):
     users = User.objects.exclude(id=request.user.id)
     friend = Friend.objects.get(current_user=request.user)
     friends = friend.users.all()
+    user_id = request.user.id
+    print user_id
 
 
     return render(request, 'index.html', {"posts": posts,
                                           "name_of_logged_in_user": name_of_logged_in_user,
                                           "users": users,
                                           "friends": friends,
-                                          # "user_id": user_id,
+                                          "user_id": user_id
                                           })
 
 
@@ -118,7 +122,7 @@ def index_nav(request):
     return render(request, 'index_nav.html', {"form": form1})
 
 
-def login_view(request):
+def login_view(request, id=None):
     if request.method == 'POST':
         form2 = LoginForm(request.POST or None)
         form1 = RegistrationForm(request.POST or None)
@@ -127,7 +131,7 @@ def login_view(request):
             email = request.POST.get("email")
             password = request.POST.get("password")
             user = authenticate(username=email, password=password)
-            print user.is_active
+            print user.is_active, "yolo"
             login(request, user)
             return redirect('/account/profile/%d' %request.user.id)
     else:
@@ -148,3 +152,45 @@ def change_friends(request, operation, pk):
     elif operation == "remove":
         Friend.lose_friend(request.user, friend)
     return redirect('/account/profile/%d' %request.user.id)
+
+
+@login_required()
+def edit_user(request, pk):
+    user = User.objects.get(pk=pk)
+
+    user_form = UserForm(instance=user)
+    print 'yolo'
+    ProfileInlineFormset = inlineformset_factory(User, UserProfile, fields=('photo', 'city', 'interests', 'job'))
+    formset = ProfileInlineFormset(instance=user)
+
+    if request.user.is_authenticated() and request.user.id == user.id:
+        if request.method == 'POST':
+            user_form = UserForm(request.POST, instance=user)
+            formset = ProfileInlineFormset(request.POST, instance=user)
+            print 'trolo'
+            if user_form.is_valid():
+                created_user = user_form.save(commit=False)
+                formset = ProfileInlineFormset(request.POST, instance=created_user)
+                print 'chuj'
+                if formset.is_valid():
+                    print created_user
+                    created_user.save()
+                    formset.save()
+                    print 'cipa'
+                    return redirect('/account/profile/%d' %request.user.id)
+
+            return render(request, 'edit_profile.html', {
+                "noodle": pk,
+                "noodle_form": user_form,
+                "formset": formset,
+            })
+        # else:
+        #     raise PermissionDenied
+
+    return render(request, "edit_profile.html", {
+        "noodle": id,
+        "noodle_form": user_form,
+        "formset": formset,
+    })
+
+

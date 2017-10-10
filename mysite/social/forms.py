@@ -27,18 +27,17 @@ class RegistrationForm(forms.Form):
         choices=SocialUser.GENDER_CHOICES
     ), required=True)
 
-    def clean_email(self, *args, **kwargs):
-        print self.cleaned_data
-        email = self.cleaned_data.get('email')
-        email2 = self.cleaned_data.get('email_ver')
-        print email
-        print email2
-        if email != email2:
-            raise forms.ValidationError("Emails must match")
-        email_qs = User.objects.filter(email=email).first()
-        if email_qs:
-            raise forms.ValidationError("This email has already been registered")
-        return email
+    # def clean_email(self, *args, **kwargs):
+    #     email = self.cleaned_data.get('email')
+    #     email2 = self.cleaned_data.get('email_ver')
+    #     print email
+    #     print email2
+    #     if email != email2:
+    #         raise forms.ValidationError("Emails must match")
+    #     email_qs = User.objects.filter(email=email).first()
+    #     if email_qs:
+    #         raise forms.ValidationError("This email has already been registered")
+    #     return email
 
 
 class LoginForm(forms.Form):
@@ -48,10 +47,11 @@ class LoginForm(forms.Form):
     def clean(self, *args, **kwargs):
         email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
-
+        print password
         # user = authenticate(username=email, password=password)
 
         user_qs = User.objects.filter(email=email).first()
+        print user_qs, "yolo"
         if not user_qs:
            raise forms.ValidationError("This user does not exist")
         else:
@@ -76,5 +76,4 @@ class UserForm(forms.ModelForm):
         fields = [
             "first_name",
             "last_name",
-            "email"
         ]

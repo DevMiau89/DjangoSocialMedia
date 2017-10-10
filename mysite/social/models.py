@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
+
+
 # Create your models here.
 
 class SocialUser(models.Model):
@@ -27,7 +29,7 @@ class SocialUser(models.Model):
         return self.name + " " + self.last_name
 
     def __str__(self):
-        return self.name + " " + self.last_name
+         return self.name + " " + self.last_name
 
 
 class Post(models.Model):
@@ -68,7 +70,6 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='user')
     photo = models.ImageField(null=True, blank=True)
     city = models.CharField(max_length=255, null=True)
-    b_day = models.DateField(auto_now=False, auto_now_add=False)
     interests = models.CharField(max_length=50, null=True)
     job = models.CharField(max_length=80, null=True)
 
