@@ -175,7 +175,7 @@ def edit_user(request, id):
     user = User.objects.get(id=id)
 
     user_form = UserForm(instance=user)
-    print 'yolo'
+    
     ProfileInlineFormset = inlineformset_factory(User, UserProfile, fields=('photo', 'city', 'interests', 'job'))
     formset = ProfileInlineFormset(instance=user)
 

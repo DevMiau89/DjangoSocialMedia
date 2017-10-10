@@ -129,9 +129,9 @@
       </div>
       {% for post in posts %}
       <div class="w3-container w3-card-2 w3-white w3-round w3-margin"><br>
-        <img src="/w3images/avatar2.png" class="w3-left w3-circle w3-margin-right">
+        <img src="{{ updated_user2.photo.url}}" style="width: 50px; height: 50px;" class="w3-left w3-circle w3-margin-right">
         <span class="w3-right w3-opacity">1 min</span>
-        <h4>{{ name_of_logged_in_user }}</h4><br>
+        <h4>{{ updated_user.first_name }}</h4><br>
         <hr class="w3-clear">
         <p><a href="/account/article/{{post.id}}" class="btn btn-primary" role="button">{{ post.title }}</a></p><br>
         <p>{{ post.text }}</p>
