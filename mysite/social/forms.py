@@ -1,7 +1,7 @@
 from django import forms
 from datetime import datetime, date
 from django.forms import extras
-from .models import SocialUser
+from .models import SocialUser, Comment
 
 from django.contrib.auth.models import User
 
@@ -27,17 +27,17 @@ class RegistrationForm(forms.Form):
         choices=SocialUser.GENDER_CHOICES
     ), required=True)
 
-    # def clean_email(self, *args, **kwargs):
-    #     email = self.cleaned_data.get('email')
-    #     email2 = self.cleaned_data.get('email_ver')
-    #     print email
-    #     print email2
-    #     if email != email2:
-    #         raise forms.ValidationError("Emails must match")
-    #     email_qs = User.objects.filter(email=email).first()
-    #     if email_qs:
-    #         raise forms.ValidationError("This email has already been registered")
-    #     return email
+    def clean_email(self, *args, **kwargs):
+        email = self.cleaned_data.get('email')
+        email2 = self.cleaned_data.get('email_ver')
+        print email
+        print email2
+        if email != email2:
+            raise forms.ValidationError("Emails must match")
+        email_qs = User.objects.filter(email=email).first()
+        if email_qs:
+            raise forms.ValidationError("This email has already been registered")
+        return email
 
 
 class LoginForm(forms.Form):
@@ -77,3 +77,14 @@ class UserForm(forms.ModelForm):
             "first_name",
             "last_name",
         ]
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = [
+            "body",
+            "post"
+        ]
+
+

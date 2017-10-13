@@ -9,8 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from django.forms.models import inlineformset_factory
-from .forms import RegistrationForm, LoginForm, PostForm, UserForm
-from .models import SocialUser, Post, Friend, UserProfile
+from .forms import RegistrationForm, LoginForm, PostForm, UserForm, CommentForm
+from .models import SocialUser, Post, Friend, UserProfile, Comment
 from django.core.exceptions import PermissionDenied
 
 User = get_user_model()
@@ -18,7 +18,7 @@ User = get_user_model()
 # Create your views here.
 @login_required()
 def index(request, id=None):
-
+    comment_form = CommentForm()
     if request.method == 'POST':
         post_form = PostForm(request.POST or None)
         print post_form.errors
@@ -57,7 +57,8 @@ def index(request, id=None):
                                               "users": users,
                                               "user_id": user_id,
                                               "updated_user": updated_user,
-                                              "updated_user2": updated_user2
+                                              "updated_user2": updated_user2,
+                                              "comment_form": comment_form
                                               })
 
     return render(request, 'index.html', {"posts": posts,
@@ -66,7 +67,9 @@ def index(request, id=None):
                                           "users": users,
                                           "user_id": user_id,
                                           "updated_user": updated_user,
-                                          "updated_user2": updated_user2
+                                          "updated_user2": updated_user2,
+                                          "comment_form": comment_form
+
                                           })
 
 
@@ -207,3 +210,14 @@ def edit_user(request, id):
     })
 
 
+def create_comment(request):
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment_body = comment_form.cleaned_data.get("body")
+            post_title = comment_form.cleaned_data.get("post")
+            post = Post.objects.filter(title=post_title).first()
+            comment_feedback = Comment(body=comment_body, post_id=post.id, user_id=request.user.id)
+            comment_feedback.save()
+            return redirect('/account/profile/%d' % request.user.id)
+    return render(request, 'index.html', {"comment_form": comment_form})

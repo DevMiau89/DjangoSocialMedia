@@ -20,7 +20,9 @@
          <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> {{ updated_user2.city}}</p>
          <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i> {{ my_current_user.b_day }}</p>
          <hr>
-         <a href="/account/profile/update/{{user_id}}">Edit Profile</a>
+         <a href="/account/profile/update/{{user_id}}">
+           <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom" style="background-color:#7d97a5 !important">Edit Profile</button>
+         </a>
         </div>
       </div>
       <br>
@@ -143,8 +145,22 @@
               <img src="/w3images/nature.jpg" style="width:100%" alt="Nature" class="w3-margin-bottom">
           </div>
         </div>
-        <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like</button>
-        <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
+        <form method="post" action="/create_comment">{% csrf_token %}
+          <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like</button>
+          <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i> {{ post.comments.count}} Comments</button>
+          <hr>
+          {% for comment in post.comments.all %}
+          <p>{{ comment.created  }}</p>
+          <p><img src="{{ updated_user2.photo.url}}" class="w3-circle" style="width:40px; height:30px;"><span> {{ comment.user }}</span><p>
+          <p>{{ comment.body }}</p>
+          <hr>
+          {% endfor %}
+          <h6 class="w3-opacity"> Add a Comment</h6>
+          <textarea class="w3-input w3-border" name="body"></textarea>
+          <input type="hidden" name="post" value="{{ post.id }}">
+          <button style="margin-top: 20px" type="submit" class="w3-button w3-theme">Add Comment</button>
+          <p></p>
+        </form>
       </div>
       {% endfor %}
 

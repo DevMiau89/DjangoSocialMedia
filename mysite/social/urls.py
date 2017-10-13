@@ -10,7 +10,8 @@ from . views import (
     logout_view,
     post_detail,
     change_friends,
-    edit_user
+    edit_user,
+    create_comment
 
 )
 
@@ -21,6 +22,7 @@ urlpatterns = [
     url(r'^account/article/(?P<id>\d+)/$', post_detail),
     url(r'^connect/(?P<operation>.+)/(?P<pk>\d+)/$', change_friends, name="change_friends"),
     url(r'^account/profile/update/(?P<id>\d+)/$', edit_user, name='account_update'),
+    url(r'^create_comment$', create_comment),
     url(r'^login_view$', login_view),
     url(r'^logout_view$', logout_view),
 ]

@@ -12,8 +12,6 @@ class SocialUser(models.Model):
     name = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
     email = models.EmailField(max_length=255, unique=True)
-    city = models.CharField(max_length=255, null=True)
-    job = models.CharField(max_length=255, null=True)
     b_day = models.DateField(auto_now=False, auto_now_add=False)
     password = models.CharField(max_length=255)
     GENDER_CHOICES = (
@@ -80,4 +78,17 @@ def create_profile(sender, **kwargs):
         user_profile = UserProfile(user=user)
         user_profile.save()
 post_save.connect(create_profile, sender=User)
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, related_name='comments')
+    user = models.ForeignKey(User, related_name='user_comments')
+    body = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created']
+
+
+
 
