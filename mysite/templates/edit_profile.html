@@ -11,11 +11,14 @@
       <div class="w3-card-2 w3-round w3-white">
         <div class="w3-container">
          <h4 class="w3-center">My Profile</h4>
-         <p class="w3-center"><img src="/w3images/avatar3.png" class="w3-circle"></p>
          <hr>
-         <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> Designer, UI</p>
-         <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> London, UK</p>
-         <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i> April 1, 1988</p>
+         {% if updated_user2.photo %}
+         <p class="w3-center"><img src="{{ updated_user2.photo.url}}" class="w3-circle" style="width: 100px; height: 100px;"></p>
+          {% endif %}
+         <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i>{{ updated_user.first_name }}</p>
+         <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> {{ updated_user2.job}}</p>
+         <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> {{ updated_user2.city}}</p>
+         <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i> {{ my_current_user.b_day }}</p>
          <hr>
         </div>
       </div>
@@ -80,22 +83,22 @@
       </div>
       <br>
 
-      <!-- Alert Box -->
-      <div class="w3-container w3-display-container w3-round w3-theme-l4 w3-border w3-theme-border w3-margin-bottom w3-hide-small">
-        <span onclick="this.parentElement.style.display='none'" class="w3-button w3-theme-l3 w3-display-topright">
-          <i class="fa fa-remove"></i>
-        </span>
-        <p><strong>Hey!</strong></p>
-        <p>People are looking at your profile. Find out who.</p>
-        {% for user in users %}
-        <p>{{ user.username }}</p>
-        <a href="{% url 'social:change_friends' operation='add' pk=user.pk %}">
-        <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom" style="background-color:#7d97a5 !important">Add Friend</button>
-        </a>
-        {% endfor %}
-        <br>
-      </div>
-      <hr>
+      <!--&lt;!&ndash; Alert Box &ndash;&gt;-->
+      <!--<div class="w3-container w3-display-container w3-round w3-theme-l4 w3-border w3-theme-border w3-margin-bottom w3-hide-small">-->
+        <!--<span onclick="this.parentElement.style.display='none'" class="w3-button w3-theme-l3 w3-display-topright">-->
+          <!--<i class="fa fa-remove"></i>-->
+        <!--</span>-->
+        <!--<p><strong>Hey!</strong></p>-->
+        <!--<p>People are looking at your profile. Find out who.</p>-->
+        <!--{% for user in users %}-->
+        <!--<p>{{ user.username }}</p>-->
+        <!--<a href="{% url 'social:change_friends' operation='add' pk=user.pk %}">-->
+        <!--<button type="button" class="w3-button w3-theme-d2 w3-margin-bottom" style="background-color:#7d97a5 !important">Add Friend</button>-->
+        <!--</a>-->
+        <!--{% endfor %}-->
+        <!--<br>-->
+      <!--</div>-->
+      <!--<hr>-->
 
 
 
@@ -176,16 +179,15 @@
       </div>
       <br>
 
-      <div class="w3-card-2 w3-round w3-white w3-padding-16 w3-center">
-        <p><strong>Friends</strong></p>
-        {% for friend in friends %}
-        <p>{{ friend.username }}</p>
-         <a href="{% url 'social:change_friends' operation='remove' pk=friend.pk %}">
-        <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom" style="background-color:#7d97a5 !important">Remove Friend</button>
-        </a>
-        {% endfor %}
-      </div>
-      <br>
+      <!--<div class="w3-card-2 w3-round w3-white w3-padding-16 w3-center">-->
+        <!--<p><strong>Friends</strong></p>-->
+        <!--{% for friend in friends %}-->
+        <!--<p>{{ friend.username }}</p>-->
+         <!--<a href="{% url 'social:change_friends' operation='remove' pk=friend.pk %}">-->
+        <!--<button type="button" class="w3-button w3-theme-d2 w3-margin-bottom" style="background-color:#7d97a5 !important">Remove Friend</button>-->
+        <!--</a>-->
+        <!--{% endfor %}-->
+      <!--</div>-->
 
       <div class="w3-card-2 w3-round w3-white w3-padding-32 w3-center">
         <p><i class="fa fa-bug w3-xxlarge"></i></p>

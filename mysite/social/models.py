@@ -31,18 +31,17 @@ class SocialUser(models.Model):
 
 
 class Post(models.Model):
-    author = models.CharField(max_length=50)
     title = models.CharField(max_length=100)
     image = models.ImageField(null=True, blank=True)
     text = models.TextField()
     created_date = models.DateTimeField(auto_now=False, auto_now_add=True)
-
+    author = models.ForeignKey(User, null=True)
 
     def __unicode__(self):
         return self.title
 
     def __str__(self):
-         return self.title
+        return self.title
 
 
 class Friend(models.Model):

@@ -15,9 +15,18 @@ from django.core.exceptions import PermissionDenied
 
 User = get_user_model()
 
+
 # Create your views here.
 @login_required()
 def index(request, id=None):
+    my_current_user = SocialUser.objects.filter(email=request.user.email).first()
+    name_of_logged_in_user = my_current_user.name
+    posts = Post.objects.filter(author=request.user.id).all().order_by('-created_date')
+    friend = Friend.objects.filter(current_user=request.user).first()
+    users = User.objects.exclude(id=request.user.id)
+    updated_user = User.objects.filter(email=request.user.email).first()
+    updated_user2 = UserProfile.objects.filter(user_id=request.user.id).first()
+    user_id = request.user.id
     comment_form = CommentForm()
     if request.method == 'POST':
         post_form = PostForm(request.POST or None)
@@ -26,26 +35,27 @@ def index(request, id=None):
             form_title = post_form.cleaned_data['title']
             form_text = post_form.cleaned_data['text']
 
-
-            feedback = Post(title=form_title, text=form_text)
+            feedback = Post(title=form_title, text=form_text, author=request.user)
             feedback.save()
-            posts = Post.objects.all().order_by('-created_date')
+            posts = Post.objects.filter(author=request.user.id).all().order_by('-created_date')
+
+            if friend:
+                users = User.objects.exclude(id=request.user.id)
+                friends = friend.users.all()
             return render(request, "index.html", {"form": post_form,
                                                   "title": form_title,
                                                   "text": form_text,
-                                                  "posts": posts
-            })
+                                                  "posts": posts,
+                                                  "my_current_user": my_current_user,
+                                                  "name_of_logged_in_user": name_of_logged_in_user,
+                                                  "friends": friends,
+                                                  "users": users,
+                                                  "user_id": user_id,
+                                                  "updated_user": updated_user,
+                                                  "updated_user2": updated_user2,
+                                                  "comment_form": comment_form
+                                                  })
 
-    my_current_user = SocialUser.objects.filter(email=request.user.email).first()
-    name_of_logged_in_user = my_current_user.name
-    posts = Post.objects.all().order_by('-created_date')
-    friend = Friend.objects.filter(current_user=request.user).first()
-    users = User.objects.exclude(id=request.user.id)
-    updated_user = User.objects.filter(email=request.user.email).first()
-    updated_user2 = UserProfile.objects.filter(user_id=request.user.id).first()
-    print updated_user2
-    user_id = request.user.id
-    print user_id
     if friend:
         users = User.objects.exclude(id=request.user.id)
         friends = friend.users.all()
@@ -69,7 +79,6 @@ def index(request, id=None):
                                           "updated_user": updated_user,
                                           "updated_user2": updated_user2,
                                           "comment_form": comment_form
-
                                           })
 
 
@@ -86,7 +95,6 @@ def post_detail(request, id=None):
     if request.method == 'POST' and "text" not in request.POST:
         instance.delete()
         return redirect("/account")
-
 
     if request.method == 'POST' and request.POST['text']:
         edit_form = PostForm(request.POST or None)
@@ -152,7 +160,7 @@ def login_view(request):
             user = authenticate(username=email, password=password)
             print user.is_active, "yolo"
             login(request, user)
-            return redirect('/account/profile/%d' %request.user.id)
+            return redirect('/account/profile/%d' % request.user.id)
     else:
         form2 = RegistrationForm()
     return render(request, "login_view.html", {"form2": form2, "form": form1})
@@ -170,15 +178,17 @@ def change_friends(request, operation, pk):
         Friend.make_friend(request.user, friend)
     elif operation == "remove":
         Friend.lose_friend(request.user, friend)
-    return redirect('/account/profile/%d' %request.user.id)
+    return redirect('/account/profile/%d' % request.user.id)
 
 
 @login_required()
 def edit_user(request, id):
     user = User.objects.get(id=id)
-
+    my_current_user = SocialUser.objects.filter(email=request.user.email).first()
+    updated_user2 = UserProfile.objects.filter(user_id=request.user.id).first()
+    updated_user = User.objects.filter(email=request.user.email).first()
     user_form = UserForm(instance=user)
-    
+
     ProfileInlineFormset = inlineformset_factory(User, UserProfile, fields=('photo', 'city', 'interests', 'job'))
     formset = ProfileInlineFormset(instance=user)
 
@@ -193,20 +203,26 @@ def edit_user(request, id):
                     print created_user
                     created_user.save()
                     formset.save()
-                    return redirect('/account/profile/%d' %request.user.id)
+                    return redirect('/account/profile/%d' % request.user.id)
 
             return render(request, 'edit_profile.html', {
                 "noodle": id,
                 "noodle_form": user_form,
                 "formset": formset,
+                "updated_user2": updated_user2,
+                "my_current_user": my_current_user,
+                "updated_user":updated_user
             })
-        # else:
-        #     raise PermissionDenied
+            # else:
+            #     raise PermissionDenied
 
     return render(request, "edit_profile.html", {
         "noodle": id,
         "noodle_form": user_form,
         "formset": formset,
+        "updated_user2": updated_user2,
+        "my_current_user": my_current_user,
+        "updated_user": updated_user
     })
 
 
