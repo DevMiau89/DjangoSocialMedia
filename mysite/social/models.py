@@ -84,9 +84,15 @@ class Comment(models.Model):
     user = models.ForeignKey(User, related_name='user_comments')
     body = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
+    profile = models.ForeignKey(UserProfile, related_name='user_comments_photo', null=True)
 
     class Meta:
         ordering = ['-created']
+
+
+# class Interests:
+#     books
+#     movies
 
 
 

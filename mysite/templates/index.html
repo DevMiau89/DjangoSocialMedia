@@ -204,7 +204,9 @@
       <div class="w3-card-2 w3-round w3-white w3-padding-16 w3-center">
         <p><strong>Friends</strong></p>
         {% for friend in friends %}
+        <a href="/account/friend_profile/{{friend.id}}">
         <p>{{ friend.username }}</p>
+        <a>
          <a href="{% url 'social:change_friends' operation='remove' pk=friend.pk %}">
         <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom" style="background-color:#7d97a5 !important">Remove Friend</button>
         </a>

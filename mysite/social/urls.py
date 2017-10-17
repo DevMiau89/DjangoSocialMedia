@@ -11,7 +11,8 @@ from . views import (
     post_detail,
     change_friends,
     edit_user,
-    create_comment
+    create_comment,
+    friend_profile
 
 )
 
@@ -25,4 +26,5 @@ urlpatterns = [
     url(r'^create_comment$', create_comment),
     url(r'^login_view$', login_view),
     url(r'^logout_view$', logout_view),
+    url(r'^account/friend_profile/(?P<id>\d+)$', friend_profile),
 ]

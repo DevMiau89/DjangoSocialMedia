@@ -233,7 +233,30 @@ def create_comment(request):
             comment_body = comment_form.cleaned_data.get("body")
             post_title = comment_form.cleaned_data.get("post")
             post = Post.objects.filter(title=post_title).first()
-            comment_feedback = Comment(body=comment_body, post_id=post.id, user_id=request.user.id)
+            profile_id = UserProfile.objects.filter(user_id=request.user.id).first()
+            comment_feedback = Comment(body=comment_body, post_id=post.id, user_id=request.user.id, profile_id=profile_id.id)
             comment_feedback.save()
             return redirect('/account/profile/%d' % request.user.id)
     return render(request, 'index.html', {"comment_form": comment_form})
+
+
+def friend_profile(request, id):
+    friend_id = id
+    updated_user2 = UserProfile.objects.filter(user_id=friend_id).first()
+    posts = Post.objects.filter(author=friend_id).all().order_by('-created_date')
+    updated_user = User.objects.filter(id=friend_id).first()
+    user_email = SocialUser.objects.filter(email=updated_user.email).first()
+    current_user = UserProfile.objects.filter(user_id=request.user.id).first()
+    friend = Friend.objects.filter(current_user=request.user).first()
+    users = User.objects.exclude(id=friend_id)
+    friends = friend.users.all()
+
+
+    return render(request, 'friend_profile.html', {"updated_user2": updated_user2,
+                                                   "posts": posts,
+                                                   "updated_user": updated_user,
+                                                   "user_email": user_email,
+                                                   "friends": friends,
+                                                   "users": users,
+                                                   "current_user": current_user
+                                                   })
