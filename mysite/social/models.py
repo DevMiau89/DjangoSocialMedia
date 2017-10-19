@@ -90,9 +90,10 @@ class Comment(models.Model):
         ordering = ['-created']
 
 
-# class Interests:
-#     books
-#     movies
+class Interests(models.Model):
+    category = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    img = models.ImageField(null=True, blank=True)
 
 
 

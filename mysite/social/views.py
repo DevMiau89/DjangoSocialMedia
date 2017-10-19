@@ -9,8 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from django.forms.models import inlineformset_factory
-from .forms import RegistrationForm, LoginForm, PostForm, UserForm, CommentForm
-from .models import SocialUser, Post, Friend, UserProfile, Comment
+from .forms import RegistrationForm, LoginForm, PostForm, UserForm, CommentForm, InterestsForm
+from .models import SocialUser, Post, Friend, UserProfile, Comment, Interests
 from django.core.exceptions import PermissionDenied
 
 User = get_user_model()
@@ -28,8 +28,10 @@ def index(request, id=None):
     updated_user2 = UserProfile.objects.filter(user_id=request.user.id).first()
     user_id = request.user.id
     comment_form = CommentForm()
+    interests_form = InterestsForm()
     if request.method == 'POST':
         post_form = PostForm(request.POST or None)
+        interests_form = InterestsForm(request.POST or None, request.FILES or None)
         print post_form.errors
         if post_form.is_valid():
             form_title = post_form.cleaned_data['title']
@@ -54,6 +56,30 @@ def index(request, id=None):
                                                   "updated_user": updated_user,
                                                   "updated_user2": updated_user2,
                                                   "comment_form": comment_form
+                                                  })
+        if interests_form.is_valid():
+            form_name = post_form.cleaned_data['name']
+            form_category = post_form.cleaned_data['category']
+            img_file = request.Files['img']
+            img_name = img_file.name
+            feedback_interests = Interests(category=form_category, name=form_name, img=img_name)
+
+            feedback_interests.save()
+
+            if friend:
+                users = User.objects.exclude(id=request.user.id)
+                friends = friend.users.all()
+
+            return render(request, 'index.html', {"posts": posts,
+                                                  "my_current_user": my_current_user,
+                                                  "name_of_logged_in_user": name_of_logged_in_user,
+                                                  "friends": friends,
+                                                  "users": users,
+                                                  "user_id": user_id,
+                                                  "updated_user": updated_user,
+                                                  "updated_user2": updated_user2,
+                                                  "comment_form": comment_form,
+                                                  "interests_form": interests_form
                                                   })
 
     if friend:
@@ -211,7 +237,7 @@ def edit_user(request, id):
                 "formset": formset,
                 "updated_user2": updated_user2,
                 "my_current_user": my_current_user,
-                "updated_user":updated_user
+                "updated_user": updated_user
             })
             # else:
             #     raise PermissionDenied
@@ -250,7 +276,6 @@ def friend_profile(request, id):
     friend = Friend.objects.filter(current_user=request.user).first()
     users = User.objects.exclude(id=friend_id)
     friends = friend.users.all()
-
 
     return render(request, 'friend_profile.html', {"updated_user2": updated_user2,
                                                    "posts": posts,

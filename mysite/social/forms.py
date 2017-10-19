@@ -1,7 +1,7 @@
 from django import forms
 from datetime import datetime, date
 from django.forms import extras
-from .models import SocialUser, Comment
+from .models import SocialUser, Comment, Interests
 
 from django.contrib.auth.models import User
 
@@ -88,3 +88,11 @@ class CommentForm(forms.ModelForm):
         ]
 
 
+class InterestsForm(forms.ModelForm):
+    class Meta:
+        model = Interests
+        fields = [
+            "name",
+            "category",
+            "img"
+        ]
