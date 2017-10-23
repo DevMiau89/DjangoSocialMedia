@@ -143,6 +143,11 @@
           {{ formset.as_p }}
           <button style="margin-top: 15px; margin-bottom: 15px;" type="submit" class="w3-button w3-theme">Save Changes</button>
         </form>
+        <form class="w3-container w3-card-4" method="post" action="/edit_interests" enctype="multipart/form-data">{% csrf_token %}
+          <p></p>
+          {{ interests_form.as_p }}
+          <button style="margin-top: 15px; margin-bottom: 15px;" type="submit" class="w3-button w3-theme">Save Changes</button>
+        </form>
       </div>
 
 

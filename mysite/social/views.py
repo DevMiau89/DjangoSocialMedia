@@ -19,6 +19,7 @@ User = get_user_model()
 # Create your views here.
 @login_required()
 def index(request, id=None):
+    interests = Interests.objects.filter(user_interests_id=request.user.id).all()
     my_current_user = SocialUser.objects.filter(email=request.user.email).first()
     name_of_logged_in_user = my_current_user.name
     posts = Post.objects.filter(author=request.user.id).all().order_by('-created_date')
@@ -29,9 +30,10 @@ def index(request, id=None):
     user_id = request.user.id
     comment_form = CommentForm()
     interests_form = InterestsForm()
+
     if request.method == 'POST':
         post_form = PostForm(request.POST or None)
-        interests_form = InterestsForm(request.POST or None, request.FILES or None)
+
         print post_form.errors
         if post_form.is_valid():
             form_title = post_form.cleaned_data['title']
@@ -57,14 +59,19 @@ def index(request, id=None):
                                                   "updated_user2": updated_user2,
                                                   "comment_form": comment_form
                                                   })
-        if interests_form.is_valid():
-            form_name = post_form.cleaned_data['name']
-            form_category = post_form.cleaned_data['category']
-            img_file = request.Files['img']
-            img_name = img_file.name
-            feedback_interests = Interests(category=form_category, name=form_name, img=img_name)
 
-            feedback_interests.save()
+        interests_form = InterestsForm(request.POST or None, request.FILES or None)
+        if interests_form.is_valid():
+
+            form_name = interests_form.cleaned_data['name']
+            form_category = interests_form.cleaned_data['category']
+            form_img = interests_form.cleaned_data['img']
+            user_id=request.user.id
+            print user_id
+            db_interests = Interests.objects.filter(category=form_category, name=form_name).first()
+            if db_interests.name != form_name and db_interests.category != form_category:
+                feedback_interests = Interests(category=form_category, name=form_name, img=form_img, user_interests_id=user_id)
+                feedback_interests.save()
 
             if friend:
                 users = User.objects.exclude(id=request.user.id)
@@ -79,7 +86,8 @@ def index(request, id=None):
                                                   "updated_user": updated_user,
                                                   "updated_user2": updated_user2,
                                                   "comment_form": comment_form,
-                                                  "interests_form": interests_form
+                                                  "interests_form": interests_form,
+                                                  "interests": interests
                                                   })
 
     if friend:
@@ -94,7 +102,9 @@ def index(request, id=None):
                                               "user_id": user_id,
                                               "updated_user": updated_user,
                                               "updated_user2": updated_user2,
-                                              "comment_form": comment_form
+                                              "comment_form": comment_form,
+                                              "interests_form": interests_form,
+                                              "interests": interests
                                               })
 
     return render(request, 'index.html', {"posts": posts,
@@ -104,7 +114,9 @@ def index(request, id=None):
                                           "user_id": user_id,
                                           "updated_user": updated_user,
                                           "updated_user2": updated_user2,
-                                          "comment_form": comment_form
+                                          "comment_form": comment_form,
+                                          "interests_form": interests_form,
+                                          "interests": interests
                                           })
 
 
@@ -209,6 +221,7 @@ def change_friends(request, operation, pk):
 
 @login_required()
 def edit_user(request, id):
+    interests_form = InterestsForm()
     user = User.objects.get(id=id)
     my_current_user = SocialUser.objects.filter(email=request.user.email).first()
     updated_user2 = UserProfile.objects.filter(user_id=request.user.id).first()
@@ -248,7 +261,8 @@ def edit_user(request, id):
         "formset": formset,
         "updated_user2": updated_user2,
         "my_current_user": my_current_user,
-        "updated_user": updated_user
+        "updated_user": updated_user,
+        "interests_form": interests_form
     })
 
 

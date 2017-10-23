@@ -66,19 +66,20 @@
       <br>
       <div class="w3-card-2 w3-round w3-white w3-hide-small">
         <div class="w3-container">
-          <form method="POST" action="">{% csrf_token %}
             <div class="w3-container w3-padding">
               <h6 class="w3-opacity">Add your interests here </h6>
               <p></p>
-              <input style="margin-bottom: 15px" class="w3-border w3-padding" type="text" name="name" placeholder="title">
-              <br>
-              <input class="w3-border w3-padding w3-input" type="text" name="category" placeholder="category">
-              <!--<p contenteditable="true" class="w3-border w3-padding" name="text">Status: Feeling Blue</p>-->
-              <br>
-              <input type="file" name="img">
-              <button style="margin-top: 20px" type="submit" class="w3-button w3-theme"><i class="fa fa-plus"></i>  Save</button>
+              <form method="POST" action="" enctype="multipart/form-data">{% csrf_token %}
+
+                  <input style="margin-bottom: 15px" class="w3-border w3-padding" type="text" name="name" placeholder="name">
+                  <br>
+                  <input class="w3-border w3-padding w3-input" type="text" name="category" placeholder="category">
+                  <!--<p contenteditable="true" class="w3-border w3-padding" name="text">Status: Feeling Blue</p>-->
+                  <br>
+                  <input type="file" name="img">
+                  <button style="margin-top: 20px" type="submit" class="w3-button w3-theme"><i class="fa fa-plus"></i>  Save</button>
+              </form>
             </div>
-          </form>
         </div>
         <br>
       </div>
@@ -88,17 +89,19 @@
         <div class="w3-container">
           <p>Interests</p>
           <p>
-            <span class="w3-tag w3-small w3-theme-d5">News</span>
-            <span class="w3-tag w3-small w3-theme-d4">W3Schools</span>
-            <span class="w3-tag w3-small w3-theme-d3">Labels</span>
-            <span class="w3-tag w3-small w3-theme-d2">Games</span>
-            <span class="w3-tag w3-small w3-theme-d1">Friends</span>
-            <span class="w3-tag w3-small w3-theme">Games</span>
-            <span class="w3-tag w3-small w3-theme-l1">Friends</span>
-            <span class="w3-tag w3-small w3-theme-l2">Food</span>
-            <span class="w3-tag w3-small w3-theme-l3">Design</span>
-            <span class="w3-tag w3-small w3-theme-l4">Art</span>
-            <span class="w3-tag w3-small w3-theme-l5">Photos</span>
+            <div class="w3-row">
+            {% for interest in interests %}
+
+              <div class="w3-card-4 w3-center w3-col" style="width: 120px; height: 170px; margin: 5px;">
+                {% if interest.img %}
+                <img src="{{interest.img.url}}" style="width: 120px;">
+                {% endif %}
+                <div class="w3-container w3-center">
+                  <span>{{ interest.name }} <br>{{ interest.category }}</span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
           </p>
         </div>
       </div>
