@@ -94,10 +94,10 @@
 
               <div class="w3-card-4 w3-center w3-col" style="width: 120px; height: 170px; margin: 5px;">
                 {% if interest.img %}
-                <img src="{{interest.img.url}}" style="width: 120px;">
+                <img src="{{interest.img.url}}" style="width: 120px; height: 90px;">
                 {% endif %}
                 <div class="w3-container w3-center">
-                  <span>{{ interest.name }} <br>{{ interest.category }}</span>
+                  <br><span>{{ interest.name }} <br>{{ interest.category }}</span>
                 </div>
               </div>
             {% endfor %}
@@ -176,7 +176,7 @@
           {% for comment in post.comments.all %}
           <p>{{ comment.created  }}</p>
           {% if updated_user2.photo %}
-          <p><img src="{{ updated_user2.photo.url}}" class="w3-circle" style="width:35px; height:35px;"><span> {{ comment.user.first_name }}</span><p>
+          <p><img src="{{ comment.profile.photo.url }}" class="w3-circle" style="width:35px; height:35px;"><span> {{ comment.user.first_name }}</span><p>
           {% endif %}
           <p>{{ comment.body }}</p>
           <hr>

@@ -19,7 +19,7 @@ User = get_user_model()
 # Create your views here.
 @login_required()
 def index(request, id=None):
-    interests = Interests.objects.filter(user_interests_id=request.user.id).all()
+    interests = Interests.objects.filter(user_interests=request.user.id).all()
     my_current_user = SocialUser.objects.filter(email=request.user.email).first()
     name_of_logged_in_user = my_current_user.name
     posts = Post.objects.filter(author=request.user.id).all().order_by('-created_date')
@@ -62,16 +62,18 @@ def index(request, id=None):
 
         interests_form = InterestsForm(request.POST or None, request.FILES or None)
         if interests_form.is_valid():
-
             form_name = interests_form.cleaned_data['name']
             form_category = interests_form.cleaned_data['category']
             form_img = interests_form.cleaned_data['img']
-            user_id=request.user.id
-            print user_id
+            user_id = request.user.id
+
             db_interests = Interests.objects.filter(category=form_category, name=form_name).first()
             if db_interests.name != form_name and db_interests.category != form_category:
-                feedback_interests = Interests(category=form_category, name=form_name, img=form_img, user_interests_id=user_id)
+                feedback_interests = Interests(category=form_category, name=form_name, img=form_img)
                 feedback_interests.save()
+                feedback_interests.user_interests.add(request.user.id)
+            else:
+                db_interests.user_interests.add(request.user.id)
 
             if friend:
                 users = User.objects.exclude(id=request.user.id)
@@ -228,7 +230,7 @@ def edit_user(request, id):
     updated_user = User.objects.filter(email=request.user.email).first()
     user_form = UserForm(instance=user)
 
-    ProfileInlineFormset = inlineformset_factory(User, UserProfile, fields=('photo', 'city', 'interests', 'job'))
+    ProfileInlineFormset = inlineformset_factory(User, UserProfile, fields=('photo', 'city', 'job'))
     formset = ProfileInlineFormset(instance=user)
 
     if request.user.is_authenticated() and request.user.id == user.id:

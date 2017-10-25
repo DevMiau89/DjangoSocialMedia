@@ -67,7 +67,6 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='user')
     photo = models.ImageField(null=True, blank=True)
     city = models.CharField(max_length=255, null=True)
-    interests = models.CharField(max_length=50, null=True)
     job = models.CharField(max_length=80, null=True)
 
 
@@ -94,7 +93,7 @@ class Interests(models.Model):
     category = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     img = models.ImageField(null=True, blank=True)
-    user_interests = models.ForeignKey(User, related_name='user_interests', null=True)
+    user_interests = models.ManyToManyField(User)
 
 
 

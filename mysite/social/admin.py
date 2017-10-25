@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import SocialUser, Post, Friend, Comment
+from .models import SocialUser, Post, Friend, Comment, Interests
 
 class SocialUserModelAdmin(admin.ModelAdmin):
     list_display = ['name', 'surname', 'email', 'created_date']
@@ -31,3 +31,4 @@ admin.site.register(Post, PostModelAdmin)
 admin.site.register(SocialUser, SocialUserModelAdmin)
 admin.site.register(Friend)
 admin.site.register(Comment, CommentAdmin)
+admin.site.register(Interests)
