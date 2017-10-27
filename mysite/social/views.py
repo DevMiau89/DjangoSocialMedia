@@ -7,7 +7,7 @@ from django.contrib.auth import (
 )
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.forms.models import inlineformset_factory
 from .forms import RegistrationForm, LoginForm, PostForm, UserForm, CommentForm, InterestsForm
 from .models import SocialUser, Post, Friend, UserProfile, Comment, Interests
@@ -23,6 +23,20 @@ def index(request, id=None):
     my_current_user = SocialUser.objects.filter(email=request.user.email).first()
     name_of_logged_in_user = my_current_user.name
     posts = Post.objects.filter(author=request.user.id).all().order_by('-created_date')
+    paginator = Paginator(posts, 5)
+    page_request_var = 'page'
+    page = request.GET.get(page_request_var)
+
+    try:
+        queryset = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        queryset = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        queryset = paginator.page(paginator.num_pages)
+
+
     friend = Friend.objects.filter(current_user=request.user).first()
     users = User.objects.exclude(id=request.user.id)
     updated_user = User.objects.filter(email=request.user.email).first()
@@ -57,7 +71,9 @@ def index(request, id=None):
                                                   "user_id": user_id,
                                                   "updated_user": updated_user,
                                                   "updated_user2": updated_user2,
-                                                  "comment_form": comment_form
+                                                  "comment_form": comment_form,
+                                                  "page_request_var": page_request_var,
+                                                  "post_list": queryset
                                                   })
 
         interests_form = InterestsForm(request.POST or None, request.FILES or None)
@@ -89,7 +105,9 @@ def index(request, id=None):
                                                   "updated_user2": updated_user2,
                                                   "comment_form": comment_form,
                                                   "interests_form": interests_form,
-                                                  "interests": interests
+                                                  "interests": interests,
+                                                  "page_request_var": page_request_var,
+                                                  "post_list": queryset
                                                   })
 
     if friend:
@@ -106,7 +124,9 @@ def index(request, id=None):
                                               "updated_user2": updated_user2,
                                               "comment_form": comment_form,
                                               "interests_form": interests_form,
-                                              "interests": interests
+                                              "interests": interests,
+                                              "page_request_var": page_request_var,
+                                              "post_list": queryset
                                               })
 
     return render(request, 'index.html', {"posts": posts,
@@ -118,7 +138,9 @@ def index(request, id=None):
                                           "updated_user2": updated_user2,
                                           "comment_form": comment_form,
                                           "interests_form": interests_form,
-                                          "interests": interests
+                                          "interests": interests,
+                                          "page_request_var": page_request_var,
+                                          "post_list": queryset
                                           })
 
 
@@ -157,6 +179,8 @@ def post_detail(request, id=None):
 
 
 def index_nav(request):
+    if request.user.is_authenticated:
+        return redirect('/account/profile/%d' % request.user.id)
     if request.method == 'POST':
         form1 = RegistrationForm(request.POST or None)
         print form1.errors

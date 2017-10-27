@@ -151,7 +151,7 @@
       </div>
 
       </div>
-      {% for post in posts %}
+      {% for post in post_list %}
       <div class="w3-container w3-card-2 w3-white w3-round w3-margin"><br>
         {% if updated_user2.photo %}
         <img src="{{ updated_user2.photo.url}}" style="width: 50px; height: 50px;" class="w3-left w3-circle w3-margin-right">
@@ -189,6 +189,24 @@
         </form>
       </div>
       {% endfor %}
+       <!-- Pagination -->
+      <div class="w3-bar"><center>
+        <div style="padding-bottom: 10px" class="w3-bar w3-light-grey">
+          <div>
+            {% if post_list.has_previous %}
+            <a class="w3-bar-item w3-button w3-dark-grey"  style="margin-left: 325px; margin-top: 10px;" href="?{{ page_request_var }}={{ post_list.previous_page_number }}">&larr; Newer</a>
+            {% endif %}
+          </div>
+          <div>
+            {% if post_list.has_next %}
+            <a class="w3-bar-item w3-button w3-dark-grey"  style="margin-left: 325px; " href="?{{ page_request_var }}={{ post_list.next_page_number }}">Older &rarr;</a>
+            {% endif %}
+          </div>
+        </div>
+        </center>
+      </div>
+      <p>&nbsp;</p>
+
 
     <!-- End Middle Column -->
     </div>
@@ -250,3 +268,4 @@
 </div>
 <br>
 {% endblock content %}
+
